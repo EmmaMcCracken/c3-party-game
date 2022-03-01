@@ -1,5 +1,6 @@
 // PLAYERS is an array of strings where each string is a name of a player
 // Two times table game
+// TO-DO: return winning message
 
 class Game {
   constructor(players) {
