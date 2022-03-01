@@ -2,17 +2,18 @@
 // Two times table game
 
 class Game {
-  constructor(players) {
+  constructor(players, timesTable = 2) {
     [this.next, this.deletePlayer] = generateCycler(players);
     this.currentPlayer = this.next();
     this.gameOver = false;
+    this.timesTable = timesTable;
   }
 
   play(num) {
     if (this.gameOver) {
       return `${this.currentPlayer} has won!`;
     }
-    if (num % 2 === 0) {
+    if (num % this.timesTable === 0) {
       this.currentPlayer = this.next();
       return `It is ${this.currentPlayer}'s turn.`;
     }
