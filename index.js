@@ -19,7 +19,7 @@ class Game {
     if (this.gameOver) {
       return `${this.currentPlayer} has won!`;
     }
-    if (seconds <= 5 && num % this.timesTable === 0) {
+    if (seconds <= this.timeAllowed && num % this.timesTable === 0) {
       this.currentPlayer = this.next();
       return `It is ${this.currentPlayer}'s turn.`;
     }
