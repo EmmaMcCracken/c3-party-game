@@ -1,13 +1,20 @@
 // PLAYERS is an array of strings where each string is a name of a player
 // Times table game, default times table is the 2 times table
-
+// players = ['emma','jenna','raj']
 class Game {
   constructor(
     players,
     timesTables = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
     timeAllowed = 5
   ) {
-    [this.next, this.deletePlayer] = generateCycler(players);
+    [this.next, this.deletePlayer] = generateCycler(
+      players.map((player) => {
+        return {
+          name: player,
+          lives: 2,
+        };
+      })
+    );
     this.currentPlayer = this.next();
     this.gameOver = false;
     this.timesTables = timesTables;
@@ -19,12 +26,12 @@ class Game {
 
   play(num) {
     if (this.gameOver) {
-      return `${this.currentPlayer} has won!`;
+      return `${this.currentPlayer.name} has won!`;
     }
     if (this.numberOfPlays === 0) {
       this.startTime = new Date();
       this.numberOfPlays++;
-      return `It is ${this.currentPlayer}'s turn. Give me a multiple of ${this.timesTable}.`;
+      return `It is ${this.currentPlayer.name}'s turn. Give me a multiple of ${this.timesTable}.`;
     }
     this.numberOfPlays++;
     this.endTime = new Date();
@@ -37,15 +44,24 @@ class Game {
     if (seconds <= this.timeAllowed && num % this.timesTable === 0) {
       this.currentPlayer = this.next();
       this.timesTable = nextTimesTable;
-      return `It is ${this.currentPlayer}'s turn. Give me a multiple of ${this.timesTable}.`;
+      return `It is ${this.currentPlayer.name}'s turn. Give me a multiple of ${this.timesTable}.`;
     }
-    const deadPlayer = this.currentPlayer;
-    this.gameOver = this.deletePlayer();
+    this.currentPlayer.lives--;
+    const playerJustDied = this.currentPlayer.lives === 0;
+    const prevPlayer = this.currentPlayer;
+    if (playerJustDied) {
+      this.gameOver = this.deletePlayer();
+    }
     this.currentPlayer = this.next();
     this.timesTable = nextTimesTable;
+
+    const rtnValueWhenGameStillOn = playerJustDied
+      ? `${prevPlayer.name} has lost the game. It is ${this.currentPlayer.name}'s turn. Give me a multiple of ${this.timesTable}.`
+      : `${prevPlayer.name} has lost a life. It is ${this.currentPlayer.name}'s turn. Give me a multiple of ${this.timesTable}.`;
+
     return this.gameOver
-      ? `${this.currentPlayer} has won!`
-      : `${deadPlayer} has lost the game. It is ${this.currentPlayer}'s turn. Give me a multiple of ${this.timesTable}.`;
+      ? `${this.currentPlayer.name} has won!`
+      : rtnValueWhenGameStillOn;
   }
 }
 
