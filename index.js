@@ -1,6 +1,9 @@
 // PLAYERS is an array of strings where each string is a name of a player
-// Times table game, default times table is the 2 times table
-// players = ['emma','jenna','raj']
+// Times table game
+// To start the game, in the console enter:
+// const game = new Game(['Emma','Jenna','Raj'])
+// game.play()
+// game.play(8) (for example if Emma was asked for a multiple of 8)
 class Game {
   constructor(
     players,
