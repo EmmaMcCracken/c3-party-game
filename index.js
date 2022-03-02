@@ -4,8 +4,9 @@
 class Game {
   constructor(
     players,
-    timesTables = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-    timeAllowed = 5
+    timesTables = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+    timeAllowed = 10,
+    maxNum = 1000
   ) {
     [this.next, this.deletePlayer] = generateCycler(
       players.map((player) => {
@@ -22,6 +23,8 @@ class Game {
     this.numberOfPlays = 0;
     this.timesTable =
       timesTables[Math.floor(Math.random() * this.timesTables.length)];
+    this.memory = [];
+    this.maxNum = maxNum;
   }
 
   play(num) {
@@ -41,10 +44,26 @@ class Game {
     const nextTimesTable =
       this.timesTables[Math.floor(Math.random() * this.timesTables.length)];
 
-    if (seconds <= this.timeAllowed && num % this.timesTable === 0) {
+    if (
+      seconds <= this.timeAllowed &&
+      !this.memory.includes(num) &&
+      num % this.timesTable === 0 &&
+      num <= this.maxNum
+    ) {
+      this.memory.push(num);
       this.currentPlayer = this.next();
       this.timesTable = nextTimesTable;
       return `It is ${this.currentPlayer.name}'s turn. Give me a multiple of ${this.timesTable}.`;
+    }
+    if (
+      seconds <= this.timeAllowed &&
+      this.memory.includes(num) &&
+      num % this.timesTable === 0
+    ) {
+      return `${num} has already been used. ${this.currentPlayer.name}, give me a multiple of ${this.timesTable} which has not been given before.`;
+    }
+    if (seconds <= this.timeAllowed && num > this.maxNum) {
+      return `You must give a number which is less than ${this.maxNum}. ${this.currentPlayer.name}, give me a multiple of ${this.timesTable}. `;
     }
     this.currentPlayer.lives--;
     const playerJustDied = this.currentPlayer.lives === 0;
