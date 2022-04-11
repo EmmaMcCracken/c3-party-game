@@ -11,7 +11,7 @@ class Game {
     timeAllowed = 10,
     maxNum = 1000
   ) {
-    [this.next, this.deletePlayer] = generateCycler(
+    [this.nextPlayer, this.deletePlayer] = generateCycler(
       players.map((player) => {
         return {
           name: player,
@@ -19,7 +19,7 @@ class Game {
         };
       })
     );
-    this.currentPlayer = this.next();
+    this.currentPlayer = this.nextPlayer();
     this.gameOver = false;
     this.timesTables = timesTables;
     this.timeAllowed = timeAllowed;
@@ -54,7 +54,7 @@ class Game {
       num <= this.maxNum
     ) {
       this.memory.push(num);
-      this.currentPlayer = this.next();
+      this.currentPlayer = this.nextPlayer();
       this.timesTable = nextTimesTable;
       return `It is ${this.currentPlayer.name}'s turn. Give me a multiple of ${this.timesTable}.`;
     }
@@ -74,7 +74,7 @@ class Game {
     if (playerJustDied) {
       this.gameOver = this.deletePlayer();
     }
-    this.currentPlayer = this.next();
+    this.currentPlayer = this.nextPlayer();
     this.timesTable = nextTimesTable;
 
     const rtnValueWhenGameStillOn = playerJustDied
@@ -91,7 +91,7 @@ function generateCycler(players) {
   let ix = 0;
   let element;
 
-  function next() {
+  function nextPlayer() {
     element = players[ix];
     ix = (ix + 1) % players.length;
     return element;
@@ -103,5 +103,10 @@ function generateCycler(players) {
     const gameOver = players.length === 1;
     return gameOver;
   }
-  return [next, deletePlayer];
+  return [nextPlayer, deletePlayer];
 }
+
+// {currentPlayer
+// timesTable
+// message:
+// players}
