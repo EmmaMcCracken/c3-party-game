@@ -28,6 +28,7 @@ class Game {
       timesTables[Math.floor(Math.random() * this.timesTables.length)];
     this.memory = [];
     this.maxNum = maxNum;
+    this.seconds = 0;
   }
 
   play(num) {
@@ -40,16 +41,25 @@ class Game {
       return `It is ${this.currentPlayer.name}'s turn. Give me a multiple of ${this.timesTable}.`;
     }
     this.numberOfPlays++;
-    this.endTime = new Date();
-    const seconds = (this.endTime.getTime() - this.startTime.getTime()) / 1000;
-    this.startTime = new Date();
 
+    this.endTime = new Date();
+    this.seconds = (this.endTime.getTime() - this.startTime.getTime()) / 1000;
     const nextTimesTable =
       this.timesTables[Math.floor(Math.random() * this.timesTables.length)];
 
     if (
-      seconds <= this.timeAllowed &&
+      this.seconds <= this.timeAllowed &&
+      this.memory.includes(num) &&
+      num % this.timesTable === 0
+    ) {
+      return `${num} has already been used. ${this.currentPlayer.name}, give me a multiple of ${this.timesTable} which has not been given before.`;
+    }
+
+    this.startTime = new Date();
+
+    if (
       !this.memory.includes(num) &&
+      this.seconds <= this.timeAllowed &&
       num % this.timesTable === 0 &&
       num <= this.maxNum
     ) {
@@ -58,14 +68,8 @@ class Game {
       this.timesTable = nextTimesTable;
       return `It is ${this.currentPlayer.name}'s turn. Give me a multiple of ${this.timesTable}.`;
     }
-    if (
-      seconds <= this.timeAllowed &&
-      this.memory.includes(num) &&
-      num % this.timesTable === 0
-    ) {
-      return `${num} has already been used. ${this.currentPlayer.name}, give me a multiple of ${this.timesTable} which has not been given before.`;
-    }
-    if (seconds <= this.timeAllowed && num > this.maxNum) {
+
+    if (this.seconds <= this.timeAllowed && num > this.maxNum) {
       return `You must give a number which is less than ${this.maxNum}. ${this.currentPlayer.name}, give me a multiple of ${this.timesTable}. `;
     }
     this.currentPlayer.lives--;
@@ -98,7 +102,12 @@ function generateCycler(players) {
   }
 
   function deletePlayer() {
+    // If currentPlayer has index 5, then the index of the next player has index, ix = 6.
+
     players = players.filter((e) => e !== element);
+
+    // Now that the currentPlayer has been removed from the players array, the index of the next player will be ix=5.
+
     ix = (ix - 1) % players.length;
     const gameOver = players.length === 1;
     return gameOver;
